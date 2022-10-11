@@ -1,4 +1,4 @@
-using JuMP, Ipopt, MathOptInterface
+using JuMP, Ipopt, MathOptInterface, DataFrames, PrettyTables
 include("enthalpy.jl")
 include("0par.jl")
 include("1MIX.jl")
@@ -12,6 +12,7 @@ include("8ITSR.jl")
 include("9PreCondensate.jl")
 include("10Condensate.jl")
 include("11PSA.jl")
+include("dataframe.jl")
 
 const MOI = MathOptInterface
 
@@ -83,7 +84,11 @@ end
 
 # constraint for postATR_Q and ghr_Q
 @variable(m, 0 <= additional_Q, start = 0);
-@NLconstraint(m, m[:ghr_Q] + m[:postATR_Q] + additional_Q == 0);
-@NLobjective(m, Min, additional_Q^2);
+@NLconstraint(m, m[:ghr_Q] + m[:postATR_Q] - additional_Q == 0);
+@NLobjective(m, Min, additional_Q);
 optimize!(m)
-@show m
+#@show m
+streamdf, otherdf = printTable(m);
+show(streamdf, allrows=true);
+print("\n\n")
+show(otherdf, allrows=true);
