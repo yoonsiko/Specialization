@@ -13,10 +13,9 @@ heavy_const = [1.702 9.081 -2.164 -74.520 4.217;
 
 
 function build_enthalpy(model, T, par)
-  return @NLexpression(model, [i = 1:10], par.hconst[i,4] + (((par.hconst[i,1]*T + par.hconst[i,2]/2*T^2*10^(-3) + par.hconst[i,3]/3*T^3*10^(-6)) 
-  - (par.hconst[i,1]*298 + par.hconst[i,2]/2*298^2*10^(-3) + par.hconst[i,3]/3*298^3*10^(-6)))*8.314 /1000))
+  return @NLexpression(model, [i = 1:10], (par.hconst[i,4] + (((par.hconst[i,1]*T + par.hconst[i,2]/2*T^2*10^(-3) + par.hconst[i,3]/3*T^3*10^(-6)) 
+  - (par.hconst[i,1]*298 + par.hconst[i,2]/2*298^2*10^(-3) + par.hconst[i,3]/3*298^3*10^(-6)))*8.314/1000))*1000)
 end
-
 
 # H298, A, B, C, D, E, F, G, H
 # order of compounds: CH4, H2O, H2, CO, CO2
@@ -38,8 +37,8 @@ end
 #end
 
 #function heavy_enthalpy(T, v=heavy_const)
-#    h_vec = v[:,4] + (((v[:,1]*T + v[:,2]/2*T^2*10^(-3) + v[:,3]/3*T^3*10^(-6)) 
-#    - (v[:,1]*298 + v[:,2]/2*298^2*10^(-3) + v[:,3]/3*298^3*10^(-6)))*8.314 /1000)
+#    h_vec = (v[:,4] + (((v[:,1]*T + v[:,2]/2*T^2*10^(-3) + v[:,3]/3*T^3*10^(-6)) 
+#    - (v[:,1]*298 + v[:,2]/2*298^2*10^(-3) + v[:,3]/3*298^3*10^(-6)))*8.314 /1000))*1000
 #
 #    return h_vec
 #end
