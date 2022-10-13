@@ -22,7 +22,7 @@ Base.@kwdef mutable struct _par
     pr::pr_par = pr_par();
     preGHR::preGHR_par = preGHR_par();
     ghr::ghr_par = ghr_par();
-    atr::atr_par = atr_par();
+    atr::atr_par = atr_par(out_T = 1450);
     postATR::postATR_par = postATR_par();
     itsr::itsr_par = itsr_par();
     preCond::preCond_par = preCond_par();
@@ -88,7 +88,10 @@ end
 @NLobjective(m, Min, additional_Q);
 optimize!(m)
 #@show m
-streamdf, otherdf = printTable(m);
+streamdf, otherdf, massdf = printTable(m);
+println("Stream table")
 show(streamdf, allrows=true);
-print("\n\n")
+println("\n\nOther variables")
 show(otherdf, allrows=true);
+println("\n\nMass table")
+show(massdf, allrows=true);
