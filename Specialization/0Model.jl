@@ -13,6 +13,7 @@ include("9PreCondensate.jl")
 include("10Condensate.jl")
 include("11PSA.jl")
 include("dataframe.jl")
+include("equilibrium.jl")
 
 const MOI = MathOptInterface
 
@@ -29,6 +30,8 @@ Base.@kwdef mutable struct _par
     cond::cond_par = cond_par();
     psa::psa_par = psa_par();
     hconst = heavy_const;
+    const_u = const_u;
+    const_o = const_o;
 end
 
 par = _par();
