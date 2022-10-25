@@ -24,7 +24,7 @@ function equilibrium(model, T, par, v)
     else 
         h_vec = par.const_u[i,1] + par.const_u[i,2]*T/2 + par.const_u[i,3]*T^2/3 + par.const_u[i,4]*T^3/4 + par.const_u[i,5]*T^4/5 + par.const_u[i,6]/T;
         s_vec = par.const_u[i,1]*log(T) + par.const_u[i,2]*T + par.const_u[i,3]*T^2/2 + par.const_u[i,4]*T^3/3 + par.const_u[i,5]*T^4/4 + par.const_u[i,7];
-    
+    end
     # v == 1: Steam methane reforming
     if v == 1
         coeff = [-1, -1, 3, 1, 0]; # CH4 H2O H2 CO CO2
@@ -40,4 +40,6 @@ function equilibrium(model, T, par, v)
     R = 8.314;
     P = 1;
     return @NLexpression(model, exp(Srx - Hrx)*(P/(R*T))^coeffsum)
+end
+
 end
