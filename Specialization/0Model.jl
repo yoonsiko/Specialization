@@ -23,7 +23,7 @@ Base.@kwdef mutable struct _par
     pr::pr_par = pr_par();
     preGHR::preGHR_par = preGHR_par();
     ghr::ghr_par = ghr_par();
-    atr::atr_par = atr_par(out_T = 1450);
+    atr::atr_par = atr_par();
     postATR::postATR_par = postATR_par();
     itsr::itsr_par = itsr_par();
     preCond::preCond_par = preCond_par();
