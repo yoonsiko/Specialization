@@ -12,7 +12,7 @@ function ITSR_model(model, par)
       set_start_value(itsr_out_mol[i] , ini_itsr_out[i])
   end
 
-  @variable(model, 273 <= itsr_in_T, start = 512.79);
+  @variable(model, 273 <= itsr_in_T, start = 823.00);
   @variable(model, 273 <= itsr_out_T, start = 523.00);
 
   @variable(model, 0 >= itsr_Q, start = -5913.262099451880)

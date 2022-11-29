@@ -12,16 +12,17 @@ function ATR_model(model, par)
       set_start_value(atr_out_mol[i] , ini_atr_out[i])
   end
 
-  @variable(model, 273 <= atr_in_T, start = 1073);
-  @variable(model, 273 <= atr_out_T, start = 1600);
+  @variable(model, 273 <= atr_in_T, start = 973);
+  @variable(model, 273 <= atr_out_T, start = 1323);
   @variable(model, 0 <= nO2, start = 47.26342984761337);
   
   # Expressions
-  atr_Ksmr_model = @NLexpression(model, exp(-22790 / atr_out_T + 8.156 * log(atr_out_T) - 4.421 / 10^3 * atr_out_T
+  #atr_Ksmr_model = @NLexpression(model, exp(-22790 / atr_out_T + 8.156 * log(atr_out_T) - 4.421 / 10^3 * atr_out_T
+  #- 4.330 * 10^3 / (atr_out_T^2) - 26.030));
+  atr_Ksmr_model = smr_o(model, atr_out_T, par)
 
-  - 4.330 * 10^3 / (atr_out_T^2) - 26.030));
-
-  atr_Kwgsr_model = @NLexpression(model, exp(5693.5/atr_out_T + 1.077*log(atr_out_T) + 5.44e-4*atr_out_T - 1.125e-7*atr_out_T^2 - 49170/(atr_out_T^2)-13.148));
+  #atr_Kwgsr_model = @NLexpression(model, exp(5693.5/atr_out_T + 1.077*log(atr_out_T) + 5.44e-4*atr_out_T - 1.125e-7*atr_out_T^2 - 49170/(atr_out_T^2)-13.148));
+  atr_Kwgsr_model = wgsr_o(model, atr_out_T, par)
   atr_ksi_smr = @NLexpression(model, atr_in_mol[1] - atr_out_mol[1]);
   atr_ksi_wgsr = @NLexpression(model, atr_out_mol[5] - atr_in_mol[5]);
 

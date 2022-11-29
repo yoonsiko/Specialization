@@ -16,80 +16,46 @@ const_u = [5.14987613 -1.36709788e-2 4.91800599e-5 -4.84743026e-8 1.66693956e-11
             3.57953347 -6.10353680e-4 1.01681433e-6 9.07005884e-10 -9.04424499e-13 -1.43440860e4 3.50840928 -1.32936276e4;
             2.35677352 8.98459677e-3 -7.12356269e-6 2.45919022e-9 -1.43699548e-13 -4.83719697e4 9.90105222 -4.73281047e4]
 
-function equilibrium(model, T, par, v)
-    i = 1:5
-    if T>=1000
-        h_vec = par.const_o[i,1] + par.const_o[i,2]*T/2 + par.const_o[i,3]*T^2/3 + par.const_o[i,4]*T^3/4 + par.const_o[i,5]*T^4/5 + par.const_o[i,6]/T;
-        s_vec = par.const_o[i,1]*log(T) + par.const_o[i,2]*T + par.const_o[i,3]*T^2/2 + par.const_o[i,4]*T^3/3 + par.const_o[i,5]*T^4/4 + par.const_o[i,7];
-    else 
-        h_vec = par.const_u[i,1] + par.const_u[i,2]*T/2 + par.const_u[i,3]*T^2/3 + par.const_u[i,4]*T^3/4 + par.const_u[i,5]*T^4/5 + par.const_u[i,6]/T;
-        s_vec = par.const_u[i,1]*log(T) + par.const_u[i,2]*T + par.const_u[i,3]*T^2/2 + par.const_u[i,4]*T^3/3 + par.const_u[i,5]*T^4/4 + par.const_u[i,7];
-    end
-    # v == 1: Steam methane reforming
-    if v == 1
-        coeff = [-1, -1, 3, 1, 0]; # CH4 H2O H2 CO CO2
-
-    # v == 2: Water gas shift reaction    
-    elseif v == 2
-        coeff = [0, -1, 1, -1, 1]; # CH4 H2O H2 CO CO2
-
-    # Some more calculations...
-    Hrx = sum(coeff[i]*h_vec[i]);
-    Srx = sum(coeff[i]*s_vec[i]);
-    coeffsum = sum(coeff);
-    R = 8.314;
-    P = 1;
-    return @NLexpression(model, exp(Srx - Hrx)*(P/(R*T))^coeffsum)
-end
-
-end
 
 function smr_u(model, T, par) # equlibrium constant for smr for temperatures under 1000K
-    R = 8.314;
-    P = 30;
-    i = 1:5;
-    h_vec = par.const_u[i,1] + par.const_u[i,2]*T/2 + par.const_u[i,3]*T^2/3 + par.const_u[i,4]*T^3/4 + par.const_u[i,5]*T^4/5 + par.const_u[i,6]/T;
-    s_vec = par.const_u[i,1]*log(T) + par.const_u[i,2]*T + par.const_u[i,3]*T^2/2 + par.const_u[i,4]*T^3/3 + par.const_u[i,5]*T^4/4 + par.const_u[i,7];
     coeff = [-1, -1, 3, 1, 0]; # CH4 H2O H2 CO CO2
+    h_vec = @NLexpression(model, [i=1:5], par.const_u[i,1] + par.const_u[i,2]*T/2 + par.const_u[i,3]*T^2/3 + par.const_u[i,4]*T^3/4 + par.const_u[i,5]*T^4/5 + par.const_u[i,6]/T);
+    s_vec = @NLexpression(model, [i=1:5], par.const_u[i,1]*log(T) + par.const_u[i,2]*T + par.const_u[i,3]*T^2/2 + par.const_u[i,4]*T^3/3 + par.const_u[i,5]*T^4/4 + par.const_u[i,7]);
 
-    Hrx = sum(coeff[i]*h_vec[i] for i = 1:5);
-    Srx = sum(coeff[i]*s_vec[i] for i = 1:5);
+    Hrx = @NLexpression(model, sum(coeff[i]*h_vec[i] for i=1:5));
+    Srx = @NLexpression(model, sum(coeff[i]*s_vec[i] for i=1:5));
     coeffsum = sum(coeff);
     return @NLexpression(model, exp(Srx - Hrx)*(par.P/(par.R*T))^coeffsum)
 end
 
 function smr_o(model, T, par) # equilibrum constant for smr for temperatures over 1000K
-    R = 8.314;
-    P = 30;
-    i = 1:5;
-    h_vec = par.const_o[i,1] + par.const_o[i,2]*T/2 + par.const_o[i,3]*T^2/3 + par.const_o[i,4]*T^3/4 + par.const_o[i,5]*T^4/5 + par.const_o[i,6]/T;
-    s_vec = par.const_o[i,1]*log(T) + par.const_o[i,2]*T + par.const_o[i,3]*T^2/2 + par.const_o[i,4]*T^3/3 + par.const_o[i,5]*T^4/4 + par.const_o[i,7];
     coeff = [-1, -1, 3, 1, 0]; # CH4 H2O H2 CO CO2
-    Hrx = sum(coeff[i]*h_vec[i]);
-    Srx = sum(coeff[i]*s_vec[i]);
+    h_vec = @NLexpression(model, [i=1:5], par.const_o[i,1] + par.const_o[i,2]*T/2 + par.const_o[i,3]*T^2/3 + par.const_o[i,4]*T^3/4 + par.const_o[i,5]*T^4/5 + par.const_o[i,6]/T);
+    s_vec = @NLexpression(model, [i=1:5], par.const_o[i,1]*log(T) + par.const_o[i,2]*T + par.const_o[i,3]*T^2/2 + par.const_o[i,4]*T^3/3 + par.const_o[i,5]*T^4/4 + par.const_o[i,7]);
+
+    Hrx = @NLexpression(model, sum(coeff[i]*h_vec[i] for i=1:5));
+    Srx = @NLexpression(model, sum(coeff[i]*s_vec[i] for i=1:5));
     coeffsum = sum(coeff);
     return @NLexpression(model, exp(Srx - Hrx)*(par.P/(par.R*T))^coeffsum)
 end
 
 function wgsr_u(model, T, par)
-    i = 1:5;
-    h_vec = par.const_u[i,1] + par.const_u[i,2]*T/2 + par.const_u[i,3]*T^2/3 + par.const_u[i,4]*T^3/4 + par.const_u[i,5]*T^4/5 + par.const_u[i,6]/T;
-    s_vec = par.const_u[i,1]*log(T) + par.const_u[i,2]*T + par.const_u[i,3]*T^2/2 + par.const_u[i,4]*T^3/3 + par.const_u[i,5]*T^4/4 + par.const_u[i,7];
     coeff = [0, -1, 1, -1, 1]; # CH4 H2O H2 CO CO2
+    h_vec = @NLexpression(model, [i=1:5], par.const_u[i,1] + par.const_u[i,2]*T/2 + par.const_u[i,3]*T^2/3 + par.const_u[i,4]*T^3/4 + par.const_u[i,5]*T^4/5 + par.const_u[i,6]/T);
+    s_vec = @NLexpression(model, [i=1:5], par.const_u[i,1]*log(T) + par.const_u[i,2]*T + par.const_u[i,3]*T^2/2 + par.const_u[i,4]*T^3/3 + par.const_u[i,5]*T^4/4 + par.const_u[i,7]);
 
-    Hrx = sum(coeff[i]*h_vec[i]);
-    Srx = sum(coeff[i]*s_vec[i]);
+    Hrx = @NLexpression(model, sum(coeff[i]*h_vec[i] for i=1:5));
+    Srx = @NLexpression(model, sum(coeff[i]*s_vec[i] for i=1:5));
     coeffsum = sum(coeff);
     return @NLexpression(model, exp(Srx - Hrx)*(par.P/(par.R*T))^coeffsum)
 end
 
 function wgsr_o(model, T, par)
-    i = 1:5;
     coeff = [0, -1, 1, -1, 1]; # CH4 H2O H2 CO CO2
-    h_vec = par.const_o[i,1] + par.const_o[i,2]*T/2 + par.const_o[i,3]*T^2/3 + par.const_o[i,4]*T^3/4 + par.const_o[i,5]*T^4/5 + par.const_o[i,6]/T;
-    s_vec = par.const_o[i,1]*log(T) + par.const_o[i,2]*T + par.const_o[i,3]*T^2/2 + par.const_o[i,4]*T^3/3 + par.const_o[i,5]*T^4/4 + par.const_o[i,7];
-    Hrx = sum(coeff[i]*h_vec[i]);
-    Srx = sum(coeff[i]*s_vec[i]);
+    h_vec = @NLexpression(model, [i=1:5], par.const_o[i,1] + par.const_o[i,2]*T/2 + par.const_o[i,3]*T^2/3 + par.const_o[i,4]*T^3/4 + par.const_o[i,5]*T^4/5 + par.const_o[i,6]/T);
+    s_vec = @NLexpression(model, [i=1:5], par.const_o[i,1]*log(T) + par.const_o[i,2]*T + par.const_o[i,3]*T^2/2 + par.const_o[i,4]*T^3/3 + par.const_o[i,5]*T^4/4 + par.const_o[i,7]);
+    Hrx = @NLexpression(model, sum(coeff[i]*h_vec[i] for i=1:5));
+    Srx = @NLexpression(model, sum(coeff[i]*s_vec[i] for i=1:5));
     coeffsum = sum(coeff);
     return @NLexpression(model, exp(Srx - Hrx)*(par.P/(par.R*T))^coeffsum)
 end

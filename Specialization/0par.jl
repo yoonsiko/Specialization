@@ -27,7 +27,7 @@ Base.@kwdef mutable struct ghr_par
 end
 
 Base.@kwdef mutable struct atr_par
-    out_T::Float64 = 1600.0;
+    out_T::Float64 = 1323.0;
     nO2_H::Float64 = 22.7;
 end
 
