@@ -1,25 +1,3 @@
-#import Pkg
-#Pkg.add("JuMP")
-#Pkg.add("Ipopt")
-#Pkg.add("MathOptInterface")
-"""
-using JuMP, Ipopt, MathOptInterface
-include("enthalpy.jl")
-const MOI = MathOptInterface
-
-
-Base.@kwdef mutable struct postATR_par
-    out_T::Float64 = 512.79;
-end
-
-Base.@kwdef mutable struct _par
-  postATR::postATR_par=postATR_par();
-  hconst = heavy_const;
-end
-
-par = _par()
-#"""
-
 function postATR_model(model, par)
    # Variables
   # CH4, H2O, H2, CO, CO2
@@ -53,22 +31,5 @@ function postATR_model(model, par)
 
   # Energy balance
   @NLconstraint(model, sum(postATR_H_out[i]*postATR_out_mol[i] - postATR_H_in[i]*postATR_in_mol[i] for i=1:5) - postATR_Q==0)
-
-  # energy balance equipment specification
-  #@NLconstraint(model, postATR_out_T - par.postATR.out_T == 0)
-
   return model;
 end
-
-"""
-m = Model(Ipopt.Optimizer);
-m = postATR_model(m, par);
-#optimize!(m);
-d = JuMP.NLPEvaluator(m);
-MOI.initialize(d, [:Jac]);
-constraint_values = zeros(1,7);
-inp = [0.00032515179570229987, 217.23336631977338, 494.9378401524241, 184.6822048577565, 27.51285545580364,
- 0.00032515179570229987, 217.23336631977338, 494.9378401524241, 184.6822048577565, 27.51285545580364, 1600, 512.79, -34472.61482403047];
-MOI.eval_constraint(d, constraint_values, inp[:]);
-@show constraint_values
-#"""

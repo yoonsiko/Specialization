@@ -1,25 +1,3 @@
-#import Pkg
-#Pkg.add("JuMP")
-#Pkg.add("Ipopt")
-#Pkg.add("MathOptInterface")
-
-"""
-using JuMP, Ipopt, MathOptInterface
-include("enthalpy.jl")
-const MOI = MathOptInterface
-
-
-Base.@kwdef mutable struct pr_par
-    out_T::Float64 = 630.52;
-end
-
-Base.@kwdef mutable struct _par
-  pr::pr_par=pr_par();
-  hconst = heavy_const;
-end
-
-par = _par()
-#"""
 function PR_model(model, par)
   # Variables
   # CH4, H2O, H2, CO, CO2
@@ -29,7 +7,6 @@ function PR_model(model, par)
   ini_pr_in = [113.76022309722791, 358.5177276354675, 0.0, 0.0, 1.9483473792214394, 8.869342547202073, 9.741736896107197, 3.605896642141171, 2.0501267199270368, 5.379765151581587];  # CH4 H2O H2 CO CO2 C2 C3 i-C4 n-C4 C5
   ini_pr_out = [178.58124131020057, 295.5198912988238, 59.489482856563995, 0.33375721522392365, 33.28038693993136, 0, 0, 0, 0, 0];
 
-  
   for i=1:10
     set_start_value(pr_in_mol[i] , ini_pr_in[i]);
     set_start_value(pr_out_mol[i] , ini_pr_out[i]);
@@ -39,7 +16,6 @@ function PR_model(model, par)
   @variable(model, 273 <= pr_out_T, start = 630.52);
   
   # Expressions
-
   pr_ksi1 = @NLexpression(model, pr_in_mol[6]); # C2H6
   pr_ksi2 = @NLexpression(model, pr_in_mol[7]); # C3H8
   pr_ksi3 = @NLexpression(model, pr_in_mol[8]); # n-C4H10
@@ -76,22 +52,5 @@ function PR_model(model, par)
 
   # Energy balance
   @NLconstraint(model, sum(pr_H_out[i]*pr_out_mol[i] - pr_H_in[i]*pr_in_mol[i] for i=1:10) ==0);
-
-  # Energy Balance - equipment specification
-  #@NLconstraint(model, pr_out_T - par.pr.out_T == 0);
-
   return model;
 end
-"""
-m = Model(Ipopt.Optimizer);
-m = PR_model(m, par);
-#optimize!(m);
-d = JuMP.NLPEvaluator(m);
-MOI.initialize(d, [:Jac]);
-constraint_values = zeros(1,12);
-inp = [113.76022309722791, 358.5177276354675, 0.0, 0.0, 1.9483473792214394, 8.869342547202073, 9.741736896107197, 
-3.605896642141171, 2.0501267199270368, 5.379765151581587, 178.58124131020057, 295.5198912988238, 59.489482856563995,
- 0.33375721522392365, 33.28038693993136, 0, 0, 0, 0, 0, 693.00, 630.52];
-MOI.eval_constraint(d, constraint_values, inp[:]);
-@show constraint_values
-#"""

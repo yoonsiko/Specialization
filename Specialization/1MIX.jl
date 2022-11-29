@@ -1,27 +1,3 @@
-#import Pkg
-#Pkg.add("JuMP")
-#Pkg.add("Ipopt")
-#Pkg.add("MathOptInterface")
-"""
-using JuMP, Ipopt, MathOptInterface
-include("enthalpy.jl")
-const MOI = MathOptInterface
-
-
-Base.@kwdef mutable struct mix_par
-    out_T::Float64 = 381.41;
-    carbon_ratio::Float64 = 2.5;
-end
-
-Base.@kwdef mutable struct _par
-  mix::mix_par=mix_par();
-  hconst = heavy_const;
-end
-
-par = _par()
-model = Model(Ipopt.Optimizer)
-"""
-
 function MIX_model(model, par)
   # Variables
   # CH4, H2O, H2, CO, CO2
@@ -47,7 +23,6 @@ function MIX_model(model, par)
   mix_H_inH2O = build_enthalpy(model, H2O_T, par)
   mix_n_Carbon = @NLexpression(model, sum(mix_out_mol[i] for i=6:10)+mix_out_mol[1])
 
-  # Constraints
   # Mass balance
   @NLconstraint(model, H2Ostream - par.mix.carbon_ratio*mix_n_Carbon == 0);
   @NLconstraint(model, mix_out_mol[1] - mix_in_mol[1] == 0)
@@ -63,22 +38,4 @@ function MIX_model(model, par)
 
   # Energy balance
   @NLconstraint(model, sum(mix_H_out[i]*mix_out_mol[i] - mix_H_in[i]*mix_in_mol[i] for i=1:10) - mix_H_inH2O[2]*H2Ostream == 0);
-
-  # Energy Balance - equipment specification
-  #@NLconstraint(model, mix_out_T - par.mix.out_T == 0); #We want to see the temperature change
-  #return model;
 end
-
-"""
-m = Model(Ipopt.Optimizer);
-m = MIX_model(m, par);
-#optimize!(m);
-d = JuMP.NLPEvaluator(m);
-MOI.initialize(d, [:Jac]);
-constraint_values = [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0];
-inp = [113.76022309722791; 0.0; 0.0; 0.0; 1.9483473792214394; 8.869342547202073; 9.741736896107197; 3.605896642141171; 2.0501267199270368;
- 5.379765151581587; 358.5177276354675; 113.76022309722791; 358.5177276354675; 0.0; 0.0; 1.9483473792214394; 8.869342547202073; 9.741736896107197;
-  3.605896642141171; 2.0501267199270368; 5.379765151581587; 311.00; 381.41; 423.00];
-MOI.eval_constraint(d, constraint_values, inp);
-@show constraint_values
-#"""

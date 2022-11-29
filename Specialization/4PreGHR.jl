@@ -1,25 +1,3 @@
-#import Pkg
-#Pkg.add("JuMP")
-#Pkg.add("Ipopt")
-#Pkg.add("MathOptInterface")
-"""
-using JuMP, Ipopt, MathOptInterface
-include("enthalpy.jl")
-const MOI = MathOptInterface
-
-
-Base.@kwdef mutable struct preGHR_par
-    out_T::Float64 = 973.0;
-end
-
-Base.@kwdef mutable struct _par
-  preGHR::preGHR_par=preGHR_par();
-  hconst = heavy_const;
-end
-
-par = _par()
-model = Model(Ipopt.Optimizer)
-#"""
 function preGHR_model(model, par)
   # Variables
   # CH4, H2O, H2, CO, CO2
@@ -50,24 +28,10 @@ function preGHR_model(model, par)
   @NLconstraint(model, preGHR_out_mol[5] - preGHR_in_mol[5] == 0)
 
   # Energy balance
-
   @NLconstraint(model, sum(preGHR_H_out[i]*preGHR_out_mol[i] - preGHR_H_in[i]*preGHR_in_mol[i] for i=1:5) - preGHR_Q==0);
 
-  # energy balance equipment specification
-
+  # Energy balance - equipment specification
   @NLconstraint(model, preGHR_out_T - par.preGHR.out_T == 0);
 
   return model;
 end
-"""
-m = Model(Ipopt.Optimizer);
-m = preGHR_model(m, par);
-#optimize!(m);
-d = JuMP.NLPEvaluator(m);
-MOI.initialize(d, [:Jac]);
-constraint_values = zeros(1,7);
-inp = [178.58124131020057, 295.5198912988238, 59.489482856563995, 0.33375721522392365, 33.28038693993136,
- 178.58124131020057, 295.5198912988238, 59.489482856563995, 0.33375721522392365, 33.28038693993136, 630.5201, 973.00, 8918.36225526873];
-MOI.eval_constraint(d, constraint_values, inp[:]);
-@show constraint_values 
-#"""
