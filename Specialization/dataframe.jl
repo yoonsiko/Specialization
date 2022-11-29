@@ -3,7 +3,7 @@
 #Pkg.add("PrettyTables")
 
 function printTable(model)
-    # Stream table
+    # Stream table (mole)
     CH₄ = [value(model[:mix_in_mol][1]), 0.0, value(model[:prePR_in_mol][1]), value(model[:pr_in_mol][1]),
      value(model[:preGHR_in_mol][1]), value(model[:ghr_in_mol][1]), value(model[:atr_in_mol][1]),
      value(model[:postATR_in_mol][1]), value(model[:itsr_in_mol][1]), value(model[:preCond_in_mol][1]),
@@ -57,11 +57,13 @@ function printTable(model)
     streamdf = DataFrame(T = T, CH₄ = CH₄, H₂O = H₂O, H₂ = H₂, CO = CO, CO₂ = CO₂,
      C₂H₆ = C₂H₆, C₃H₈ = C₃H₈, nC₄H₁₀ = nC₄H₁₀, iC₄H₁₀ = iC₄H₁₀, C₅₊ = C₅₊);
 
+
     # Other variable table
     variable = ["prePR_Q","preGHR_Q","ghr_Q", "postATR_Q", "itsr_Q","preCond_Q","nO2","additional_Q"]
     values = [value(model[:prePR_Q]),value(model[:preGHR_Q]),value(model[:ghr_Q]), value(model[:postATR_Q]),
     value(model[:itsr_Q]),value(model[:preCond_Q]),value(model[:nO2]),value(model[:additional_Q])];
     otherdf = DataFrame(Variable = variable, Value = values);
+
 
     # Mass table
     C = 12.01;
@@ -95,5 +97,39 @@ function printTable(model)
     oxygenstream[7] = value(model[:nO2])*32;
     massdf = DataFrame(Mass= mass, O₂ = oxygenstream);
 
-    return streamdf, otherdf, massdf
+
+    # Composition table
+    xCH4 = zeros(15);
+    xH2O = zeros(15);
+    xH2 = zeros(15);
+    xCO = zeros(15);
+    xCO2 = zeros(15);
+    xC2H6 = zeros(15);
+    xC3H8 = zeros(15);
+    xnC4H10 = zeros(15);
+    xiC4H10 = zeros(15);
+    xC5 = zeros(15);
+
+    totalmolestream = zeros(15);
+    for i=1:15
+        totalmolestream[i] = CH₄[i] + H₂O[i] + H₂[i] + CO[i] + CO₂[i] + C₂H₆[i] + C₃H₈[i] + nC₄H₁₀[i] + iC₄H₁₀[i] + C₅₊[i]
+    end
+
+    for i=1:15 
+        xCH4[i] = CH₄[i]/totalmolestream[i]
+        xH2O[i] = H₂O[i]/totalmolestream[i]
+        xH2[i] = H₂[i]/totalmolestream[i]
+        xCO[i] = CO[i]/totalmolestream[i]
+        xCO2[i] = CO₂[i]/totalmolestream[i]
+        xC2H6[i] = C₂H₆[i]/totalmolestream[i]
+        xC3H8[i] = C₃H₈[i]/totalmolestream[i]
+        xnC4H10[i] = nC₄H₁₀[i]/totalmolestream[i]
+        xiC4H10[i] = iC₄H₁₀[i]/totalmolestream[i]
+        xC5[i] = C₅₊[i]/totalmolestream[i]
+    end
+
+    compositiondf = DataFrame(xCH₄ = xCH4, xH₂O = xH2O, xH₂ = xH2, xCO = xCO, xCO₂ = xCO2,
+     xC₂H₆ = xC2H6, xC₃H₈ = xC3H8, xnC₄H₁₀ = xnC4H10, xiC₄H₁₀ = xiC4H10, xC₅₊ = xC5);
+
+    return streamdf, otherdf, massdf,compositiondf
 end

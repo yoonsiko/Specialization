@@ -32,6 +32,8 @@ Base.@kwdef mutable struct _par
     hconst = heavy_const;
     const_u = const_u;
     const_o = const_o;
+    P = 30;
+    R = 8.314;
 end
 
 par = _par();
@@ -91,10 +93,9 @@ end
 @NLobjective(m, Min, additional_Q);
 optimize!(m)
 #@show m
-streamdf, otherdf, massdf = printTable(m);
-println("Stream table")
-show(streamdf, allrows=true);
-println("\n\nOther variables")
-show(otherdf, allrows=true);
-println("\n\nMass table")
-show(massdf, allrows=true);
+streamdf, otherdf, massdf, compositiondf = printTable(m);
+
+#println("Stream table"); show(streamdf, allrows=true);
+#println("\n\nOther variables"); show(otherdf, allrows=true);
+#println("\n\nMass table"); show(massdf, allrows=true);
+#println("\n\nCompostion table"); show(compositiondf, allrows=true);
