@@ -16,6 +16,18 @@ const_u = [5.14987613 -1.36709788e-2 4.91800599e-5 -4.84743026e-8 1.66693956e-11
             3.57953347 -6.10353680e-4 1.01681433e-6 9.07005884e-10 -9.04424499e-13 -1.43440860e4 3.50840928 -1.32936276e4;
             2.35677352 8.98459677e-3 -7.12356269e-6 2.45919022e-9 -1.43699548e-13 -4.83719697e4 9.90105222 -4.73281047e4]
 
+smr_const = [-1.51735037e-05, 4.79654639e-02, -2.91867555e+01];
+wgsr_const = [2.95405564e-06, -8.48603361e-03, 4.99373583e+00];
+
+function K_smr(model, T, par)
+    T -= 273.15; # Convert kelvin to celsius
+    return @NLexpression(model, exp(par.smr_const[1]*T^2 + par.smr_const[2]*T + par.smr_const[3]));
+end
+
+function K_wgsr(model, T, par)
+    T -= 273.15; # Convert kelvin to celsius
+    return @NLexpression(model, exp(par.wgsr_const[1]*T^2 + par.wgsr_const[2] + par.wgsr_const[3]));
+end
 
 function smr_u(model, T, par) # equlibrium constant for smr for temperatures under 1000K
     coeff = [-1, -1, 3, 1, 0]; # CH4 H2O H2 CO CO2

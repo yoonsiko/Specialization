@@ -18,8 +18,11 @@ function ITSR_model(model, par)
   @variable(model, 0 >= itsr_Q, start = -5913.262099451880)
 
   # Expressions
-  itsr_Kwgsr_model = @NLexpression(model, exp(5693.5/itsr_out_T + 1.077*log(itsr_out_T) + 5.44e-4*itsr_out_T - 1.125e-7*itsr_out_T^2 - 49170/(itsr_out_T^2)-13.148))
+  #itsr_Kwgsr_model = @NLexpression(model, exp(5693.5/itsr_out_T + 1.077*log(itsr_out_T) + 5.44e-4*itsr_out_T - 1.125e-7*itsr_out_T^2 - 49170/(itsr_out_T^2)-13.148))
   itsr_ksi_wgsr = @NLexpression(model, itsr_in_mol[2] - itsr_out_mol[2])
+  
+  itsr_K_wgsr_model = K_wgsr(model, itsr_out_T, par);
+
   itsr_ntot = @NLexpression(model, sum(itsr_out_mol[i] for i=1:5))
 
   itsr_H_out = build_enthalpy(model, itsr_out_T, par)
@@ -28,7 +31,7 @@ function ITSR_model(model, par)
   # Constraints
   # Mass balance
   @NLconstraint(model, itsr_out_mol[1] - itsr_in_mol[1] == 0)
-  @NLconstraint(model, itsr_Kwgsr_model*((itsr_out_mol[4]/itsr_ntot) * (itsr_out_mol[2]/itsr_ntot)) - (((itsr_out_mol[5]/itsr_ntot) * (itsr_out_mol[3]/itsr_ntot))) == 0)
+  @NLconstraint(model, itsr_K_wgsr_model*((itsr_out_mol[4]/itsr_ntot) * (itsr_out_mol[2]/itsr_ntot)) - (((itsr_out_mol[5]/itsr_ntot) * (itsr_out_mol[3]/itsr_ntot))) == 0)
   @NLconstraint(model, itsr_out_mol[3] - itsr_in_mol[3] - itsr_ksi_wgsr == 0)
   @NLconstraint(model, itsr_out_mol[4] - itsr_in_mol[4] + itsr_ksi_wgsr == 0)
   @NLconstraint(model, itsr_out_mol[5] - itsr_in_mol[5] - itsr_ksi_wgsr == 0)

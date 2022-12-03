@@ -19,10 +19,14 @@ function ATR_model(model, par)
   # Expressions
   #atr_Ksmr_model = @NLexpression(model, exp(-22790 / atr_out_T + 8.156 * log(atr_out_T) - 4.421 / 10^3 * atr_out_T
   #- 4.330 * 10^3 / (atr_out_T^2) - 26.030));
-  atr_Ksmr_model = smr_o(model, atr_out_T, par)
+  #atr_Ksmr_model = smr_o(model, atr_out_T, par)
 
   #atr_Kwgsr_model = @NLexpression(model, exp(5693.5/atr_out_T + 1.077*log(atr_out_T) + 5.44e-4*atr_out_T - 1.125e-7*atr_out_T^2 - 49170/(atr_out_T^2)-13.148));
-  atr_Kwgsr_model = wgsr_o(model, atr_out_T, par)
+  #atr_Kwgsr_model = wgsr_o(model, atr_out_T, par)
+  
+  atr_K_smr_model = K_smr(model, atr_out_T, par);
+  atr_K_wgsr_model = K_wgsr(model, atr_out_T, par);
+
   atr_ksi_smr = @NLexpression(model, atr_in_mol[1] - atr_out_mol[1]);
   atr_ksi_wgsr = @NLexpression(model, atr_out_mol[5] - atr_in_mol[5]);
 
@@ -34,8 +38,8 @@ function ATR_model(model, par)
 
   # Constraints
   # Mass balance
-  @NLconstraint(model, atr_Ksmr_model*((atr_out_mol[1]/atr_ntot) * (atr_out_mol[2]/atr_ntot )) - (((atr_out_mol[4]/atr_ntot) * (atr_out_mol[3]/atr_ntot)^3)) == 0);
-  @NLconstraint(model, atr_Kwgsr_model*((atr_out_mol[4]/atr_ntot) * (atr_out_mol[2]/atr_ntot)) - (((atr_out_mol[5]/atr_ntot) * (atr_out_mol[3]/atr_ntot))) == 0);
+  @NLconstraint(model, atr_K_smr_model*((atr_out_mol[1]/atr_ntot) * (atr_out_mol[2]/atr_ntot )) - (((atr_out_mol[4]/atr_ntot) * (atr_out_mol[3]/atr_ntot)^3)) == 0);
+  @NLconstraint(model, atr_K_wgsr_model*((atr_out_mol[4]/atr_ntot) * (atr_out_mol[2]/atr_ntot)) - (((atr_out_mol[5]/atr_ntot) * (atr_out_mol[3]/atr_ntot))) == 0);
   @NLconstraint(model, atr_out_mol[2] - atr_in_mol[2] + atr_ksi_smr + atr_ksi_wgsr - 2*nO2 == 0);
   @NLconstraint(model, atr_out_mol[3] - atr_in_mol[3] - 3 * atr_ksi_smr - atr_ksi_wgsr + 2*nO2 == 0);
   @NLconstraint(model, atr_out_mol[4] - atr_in_mol[4] - atr_ksi_smr + atr_ksi_wgsr == 0);

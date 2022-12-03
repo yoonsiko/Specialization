@@ -23,10 +23,13 @@ function GHR_model(model, par)
   #ghr_Ksmr_model = @NLexpression(model, exp(-22790 / ghr_out_T + 8.156 * log(ghr_out_T) - 4.421 / 10^3 * ghr_out_T
 
   #- 4.330 * 10^3 / (ghr_out_T^2) - 26.030));
-  ghr_Ksmr_model = smr_u(model, 973, par);
+  #ghr_K_smr_model = smr_u(model, 973, par);
 
   #ghr_Kwgsr_model = @NLexpression(model, exp(5693.5/ghr_out_T + 1.077*log(ghr_out_T) + 5.44e-4*ghr_out_T - 1.125e-7*ghr_out_T^2 - 49170/(ghr_out_T^2)-13.148));
-  ghr_Kwgsr_model = wgsr_u(model, 973, par);
+  #ghr_K_wgsr_model = wgsr_u(model, 973, par);
+
+  ghr_K_smr_model = K_smr(model, ghr_out_T, par);
+  ghr_K_wgsr_model = K_wgsr(model, ghr_out_T, par);
 
   ghr_ksi_smr = @NLexpression(model, ghr_in_mol[1] - ghr_out_mol[1]);
 
@@ -39,9 +42,9 @@ function GHR_model(model, par)
 
   # Constraints
   # Mass balance
-  @NLconstraint(model, ghr_Ksmr_model*((ghr_out_mol[1]/ghr_ntot) * (ghr_out_mol[2]/ghr_ntot )) -
+  @NLconstraint(model, ghr_K_smr_model*((ghr_out_mol[1]/ghr_ntot) * (ghr_out_mol[2]/ghr_ntot )) -
    (((ghr_out_mol[4]/ghr_ntot) * (ghr_out_mol[3]/ghr_ntot)^3)) == 0);
-  @NLconstraint(model, ghr_Kwgsr_model*((ghr_out_mol[4]/ghr_ntot) * (ghr_out_mol[2]/ghr_ntot)) -
+  @NLconstraint(model, ghr_K_wgsr_model*((ghr_out_mol[4]/ghr_ntot) * (ghr_out_mol[2]/ghr_ntot)) -
    (((ghr_out_mol[5]/ghr_ntot) * (ghr_out_mol[3]/ghr_ntot))) == 0);
   @NLconstraint(model, ghr_out_mol[2] - ghr_in_mol[2] + ghr_ksi_smr + ghr_ksi_wgsr == 0);
   @NLconstraint(model, ghr_out_mol[3] - ghr_in_mol[3] - 3 * ghr_ksi_smr - ghr_ksi_wgsr == 0);

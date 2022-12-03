@@ -24,11 +24,13 @@ function PR_model(model, par)
   pr_ksi6 = @NLexpression(model, pr_in_mol[1] - pr_out_mol[1]);
   pr_ksi7 = @NLexpression(model, pr_out_mol[5] - pr_in_mol[5]);
 
-  pr_Ksmr_model = @NLexpression(model, exp(-22790 / pr_out_T + 8.156 * log(pr_out_T) - 4.421 / 10^3 * pr_out_T
+  #pr_Ksmr_model = @NLexpression(model, exp(-22790 / pr_out_T + 8.156 * log(pr_out_T) - 4.421 / 10^3 * pr_out_T
 
-  - 4.330 * 10^3 / (pr_out_T^2) - 26.030));
+  #- 4.330 * 10^3 / (pr_out_T^2) - 26.030));
 
-  pr_Kwgsr_model = @NLexpression(model, exp(5693.5/pr_out_T + 1.077*log(pr_out_T) + 5.44e-4*pr_out_T - 1.125e-7*pr_out_T^2 - 49170/(pr_out_T^2)-13.148));
+  #pr_Kwgsr_model = @NLexpression(model, exp(5693.5/pr_out_T + 1.077*log(pr_out_T) + 5.44e-4*pr_out_T - 1.125e-7*pr_out_T^2 - 49170/(pr_out_T^2)-13.148));
+  pr_K_smr_model = K_smr(model, pr_out_T, par);
+  pr_K_wgsr_model = K_wgsr(model, pr_out_T, par);
 
   pr_ntot = @NLexpression(model, sum(pr_out_mol[i] for i=1:10));
 
@@ -40,8 +42,8 @@ function PR_model(model, par)
   @NLconstraint(model, pr_out_mol[2] - pr_in_mol[2] + 2 * pr_ksi1 + 3 * pr_ksi2 + 4 * pr_ksi3 + 4 * pr_ksi4 + 5 * pr_ksi5 + pr_ksi6 + pr_ksi7 == 0);
   @NLconstraint(model, pr_out_mol[3] - pr_in_mol[3] - 5 * pr_ksi1 - 7 * pr_ksi2 - 9 * pr_ksi3 - 9 * pr_ksi4 - 11 * pr_ksi5 - 3 * pr_ksi6 - pr_ksi7 == 0);
   @NLconstraint(model, pr_out_mol[4] - pr_in_mol[4] - 2 * pr_ksi1 - 3 * pr_ksi2 - 4 * pr_ksi3 - 4 * pr_ksi4 - 5 * pr_ksi5 - pr_ksi6 + pr_ksi7 == 0);
-  @NLconstraint(model, pr_Ksmr_model*((pr_out_mol[1]/pr_ntot) * (pr_out_mol[2]/pr_ntot )) - (((pr_out_mol[4]/pr_ntot) * (pr_out_mol[3]/pr_ntot)^3)) == 0);
-  @NLconstraint(model, pr_Kwgsr_model*((pr_out_mol[4]/pr_ntot) * (pr_out_mol[2]/pr_ntot)) - (((pr_out_mol[5]/pr_ntot) * (pr_out_mol[3]/pr_ntot))) == 0);
+  @NLconstraint(model, pr_K_smr_model*((pr_out_mol[1]/pr_ntot) * (pr_out_mol[2]/pr_ntot )) - (((pr_out_mol[4]/pr_ntot) * (pr_out_mol[3]/pr_ntot)^3)) == 0);
+  @NLconstraint(model, pr_K_wgsr_model*((pr_out_mol[4]/pr_ntot) * (pr_out_mol[2]/pr_ntot)) - (((pr_out_mol[5]/pr_ntot) * (pr_out_mol[3]/pr_ntot))) == 0);
   @NLconstraint(model, pr_out_mol[6] - pr_in_mol[6] + pr_ksi1 == 0)
   @NLconstraint(model, pr_out_mol[7] - pr_in_mol[7] + pr_ksi2 == 0)
   @NLconstraint(model, pr_out_mol[8] - pr_in_mol[8] + pr_ksi3 == 0)

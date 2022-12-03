@@ -30,10 +30,12 @@ Base.@kwdef mutable struct _par
     cond::cond_par = cond_par();
     psa::psa_par = psa_par();
     hconst = heavy_const;
-    const_u = const_u;
-    const_o = const_o;
-    P = 1500; # 15 bar 
-    R = 8.314;
+    #const_u = const_u;
+    #const_o = const_o;
+    #P = 1500; # 15 bar 
+    #R = 8.314;
+    smr_const = smr_const;
+    wgsr_const = wgsr_const;
 end
 
 par = _par();
@@ -96,6 +98,6 @@ optimize!(m)
 streamdf, otherdf, massdf, compositiondf = printTable(m);
 
 println("Stream table"); show(streamdf, allrows=true);
-#println("\n\nOther variables"); show(otherdf, allrows=true);
-#println("\n\nMass table"); show(massdf, allrows=true);
-#println("\n\nCompostion table"); show(compositiondf, allrows=true);
+println("\n\nOther variables"); show(otherdf, allrows=true);
+println("\n\nMass table"); show(massdf, allrows=true);
+println("\n\nCompostion table"); show(compositiondf, allrows=true);
