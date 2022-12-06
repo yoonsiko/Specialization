@@ -13,7 +13,7 @@ function ATR_model(model, par)
   end
 
   @variable(model, 273 <= atr_in_T, start = 973);
-  @variable(model, 273 <= atr_out_T, start = 1323);
+  @variable(model, 1273 <= atr_out_T <= 1373, start = 1323);
   @variable(model, 0 <= nO2, start = 47.26342984761337);
   
   # Expressions
@@ -48,6 +48,6 @@ function ATR_model(model, par)
   @NLconstraint(model, sum(atr_H_out[i]*atr_out_mol[i] - atr_H_in[i]*atr_in_mol[i] for i=1:5) - nO2*par.atr.nO2_H == 0);
 
   # Energy balance - equipment specification
-  @NLconstraint(model, atr_out_T - par.atr.out_T == 0);
+  #@NLconstraint(model, atr_out_T - par.atr.out_T == 0);
   return model;
 end

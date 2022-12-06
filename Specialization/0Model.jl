@@ -39,7 +39,9 @@ Base.@kwdef mutable struct _par
 end
 
 par = _par();
-m = Model(Ipopt.Optimizer);
+optimizer = optimizer_with_attributes(Ipopt.Optimizer, "tol" => 1e-6, "constr_viol_tol" => 1e-8)
+m = Model(optimizer);
+
 MIX_model(m, par);
 prePR_model(m, par);
 PR_model(m, par);
@@ -90,9 +92,11 @@ end
 
 
 # constraint for postATR_Q and ghr_Q
-@variable(m, 0 <= additional_Q, start = 0);
-@NLconstraint(m, m[:ghr_Q] + m[:postATR_Q] - additional_Q == 0);
-@NLobjective(m, Min, additional_Q);
+#@variable(m, 0 <= additional_Q, start = 0);
+@NLconstraint(m, m[:ghr_Q] + m[:postATR_Q] == 0); #- additional_Q == 0);
+@NLconstraint(m, m[:atr_out_T] - m[:ghr_out_T] >= 25);
+@NLconstraint(m, m[:postATR_out_T] - m[:ghr_in_T] >= 25);
+@NLobjective(m, Max, m[:psa_outProduct_mol][3]);
 optimize!(m)
 #@show m
 streamdf, otherdf, massdf, compositiondf = printTable(m);

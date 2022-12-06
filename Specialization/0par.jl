@@ -19,7 +19,7 @@ Base.@kwdef mutable struct pr_par
 end
 
 Base.@kwdef mutable struct preGHR_par
-    out_T::Float64 = 973.0;
+    out_T::Float64 = 753.0;
 end
 
 Base.@kwdef mutable struct ghr_par

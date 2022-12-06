@@ -12,10 +12,10 @@ function ITSR_model(model, par)
       set_start_value(itsr_out_mol[i] , ini_itsr_out[i])
   end
 
-  @variable(model, 273 <= itsr_in_T, start = 823.00);
+  @variable(model, 273 <= itsr_in_T, start = 600.00);
   @variable(model, 273 <= itsr_out_T, start = 523.00);
 
-  @variable(model, 0 >= itsr_Q, start = -5913.262099451880)
+  @variable(model, 0 >= itsr_Q, start = -5913000)
 
   # Expressions
   #itsr_Kwgsr_model = @NLexpression(model, exp(5693.5/itsr_out_T + 1.077*log(itsr_out_T) + 5.44e-4*itsr_out_T - 1.125e-7*itsr_out_T^2 - 49170/(itsr_out_T^2)-13.148))

@@ -13,9 +13,9 @@ function postATR_model(model, par)
   end
 
   @variable(model, 273 <= postATR_in_T, start = 1323.00);
-  @variable(model, 273 <= postATR_out_T, start = 823.00);
+  @variable(model, 273 <= postATR_out_T, start = 600.00);
 
-  @variable(model, 0 >= postATR_Q, start = -34472.61482403047)
+  @variable(model, 0 >= postATR_Q, start = -34472000)
 
   # Expressions
   postATR_H_out = build_enthalpy(model, postATR_out_T, par)

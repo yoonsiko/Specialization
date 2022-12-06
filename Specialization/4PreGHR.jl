@@ -13,7 +13,7 @@ function preGHR_model(model, par)
   end
 
   @variable(model, 273 <= preGHR_in_T, start = 630.5201);
-  @variable(model, 273 <= preGHR_out_T, start = 973.00);
+  @variable(model, 273 <= preGHR_out_T, start = 753.00);
 
   preGHR_H_out = build_enthalpy(model, preGHR_out_T, par)
   preGHR_H_in = build_enthalpy(model, preGHR_in_T, par)

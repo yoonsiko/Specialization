@@ -14,10 +14,10 @@ function GHR_model(model, par)
       set_start_value(ghr_out_mol[i] , ini_ghr_out[i]);
   end
 
-  @variable(model, 273 <= ghr_in_T, start = 973);
-  @variable(model, 273 <= ghr_out_T, start = 973);
+  @variable(model, 273 <= ghr_in_T, start = 753);
+  @variable(model, 923 <= ghr_out_T <= 1023, start = 973);
 
-  @variable(model, 0 <= ghr_Q, start = 34472.61482403047);
+  @variable(model, 0 <= ghr_Q, start = 34472000);
 
   # Expressions
   #ghr_Ksmr_model = @NLexpression(model, exp(-22790 / ghr_out_T + 8.156 * log(ghr_out_T) - 4.421 / 10^3 * ghr_out_T
@@ -54,6 +54,6 @@ function GHR_model(model, par)
   @NLconstraint(model, sum(ghr_H_out[i]*ghr_out_mol[i] - ghr_H_in[i]*ghr_in_mol[i] for i=1:5) - ghr_Q==0);
 
   # Energy balance - equipment specification
-  @NLconstraint(model, ghr_out_T - par.ghr.out_T == 0);
+  #@NLconstraint(model, ghr_out_T - par.ghr.out_T == 0);
   return model;
 end

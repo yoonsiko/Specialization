@@ -26,7 +26,7 @@ end
 
 function K_wgsr(model, T, par)
     T -= 273.15; # Convert kelvin to celsius
-    return @NLexpression(model, exp(par.wgsr_const[1]*T^2 + par.wgsr_const[2] + par.wgsr_const[3]));
+    return @NLexpression(model, exp(par.wgsr_const[1]*T^2 + par.wgsr_const[2]*T + par.wgsr_const[3]));
 end
 
 function smr_u(model, T, par) # equlibrium constant for smr for temperatures under 1000K

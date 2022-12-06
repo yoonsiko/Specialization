@@ -17,7 +17,7 @@ function preCond_model(model, par)
 
   preCond_H_out = build_enthalpy(model, preCond_out_T, par)
   preCond_H_in = build_enthalpy(model, preCond_in_T, par)
-  @variable(model, 0 >= preCond_Q, start = -6345.822536039297);
+  @variable(model, 0 >= preCond_Q, start = -6345000);
 
   # Constraints
   # Mass balance
