@@ -121,5 +121,9 @@ for i = 1:30
     append!(global_n_H2_final, value(m[:psa_outProduct_mol][3])); 
 end 
 
-
-display(plot(global_n_CH4_init, global_n_H2_final));
+#Plots.pyplot()
+display(plot(global_n_CH4_init, global_n_H2_final,
+            title = "Initial CH4 vs final H2",
+            xlabel = "CH4 [kmol/h]",
+            ylabel = "H2 [kmol/h]",
+            label = "Final H2"));
