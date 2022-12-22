@@ -35,7 +35,8 @@ Base.@kwdef mutable struct _par
 end
 
 par = _par();
-optimizer = optimizer_with_attributes(Ipopt.Optimizer, "tol" => 1e-6, "constr_viol_tol" => 1e-8)
+optimizer = optimizer_with_attributes(Ipopt.Optimizer,
+             "tol" => 1e-6, "constr_viol_tol" => 1e-8)
 m = Model(optimizer);
 
 MIX_model(m, par);
@@ -101,3 +102,7 @@ println("Stream table"); show(streamdf, allrows=true);
 println("\n\nOther variables"); show(otherdf, allrows=true);
 println("\n\nMass table"); show(massdf, allrows=true);
 println("\n\nCompostion table"); show(compositiondf, allrows=true);
+
+total_H2 = value(m[:pr_out_mol][3]) + value(m[:preGHR_out_mol][3]) + value(m[:ghr_out_mol][3]) + value(m[:atr_out_mol][3]) + value(m[:postATR_out_mol][3]) +
+                value(m[:itsr_out_mol][3]) + value(m[:preCond_out_mol][3]) + value(m[:cond_outProduct_mol][3]) + value(m[:psa_outProduct_mol][3]);
+H2_eff = value(m[:psa_outProduct_mol][3])/total_H2

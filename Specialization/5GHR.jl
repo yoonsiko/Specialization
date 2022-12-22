@@ -4,9 +4,8 @@ function GHR_model(model, par)
   @variable(model, 0 <= ghr_in_mol[1:5]); # Stream 6
   @variable(model, 0 <= ghr_out_mol[1:5]); # Stream 7
 
-  #ini_ghr_in = [178.58 295.52 59.49 0.33 33.28];  # CH4 H2O H2 CO CO2
+  # CH4 H2O H2 CO CO2
   ini_ghr_in = [178.58124131020057, 295.5198912988238, 59.489482856563995, 0.33375721522392365, 33.28038693993136];
-  #ini_ghr_out = [22.54 122.16 544.93 139.05 50.60];
   ini_ghr_out = [100.543406840790453, 122.15875765109533, 544.9262854431126, 139.04829250631568, 50.60368611824971];
 
   for i=1:5
@@ -18,15 +17,6 @@ function GHR_model(model, par)
   @variable(model, 923 <= ghr_out_T <= 1023, start = 973);
 
   @variable(model, 0 <= ghr_Q, start = 34472000);
-
-  # Expressions
-  #ghr_Ksmr_model = @NLexpression(model, exp(-22790 / ghr_out_T + 8.156 * log(ghr_out_T) - 4.421 / 10^3 * ghr_out_T
-
-  #- 4.330 * 10^3 / (ghr_out_T^2) - 26.030));
-  #ghr_K_smr_model = smr_u(model, 973, par);
-
-  #ghr_Kwgsr_model = @NLexpression(model, exp(5693.5/ghr_out_T + 1.077*log(ghr_out_T) + 5.44e-4*ghr_out_T - 1.125e-7*ghr_out_T^2 - 49170/(ghr_out_T^2)-13.148));
-  #ghr_K_wgsr_model = wgsr_u(model, 973, par);
 
   ghr_K_smr_model = K_smr(model, ghr_out_T, par);
   ghr_K_wgsr_model = K_wgsr(model, ghr_out_T, par);

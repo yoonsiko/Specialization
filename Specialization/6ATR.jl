@@ -17,13 +17,6 @@ function ATR_model(model, par)
   @variable(model, 0 <= nO2, start = 47.26342984761337);
   
   # Expressions
-  #atr_Ksmr_model = @NLexpression(model, exp(-22790 / atr_out_T + 8.156 * log(atr_out_T) - 4.421 / 10^3 * atr_out_T
-  #- 4.330 * 10^3 / (atr_out_T^2) - 26.030));
-  #atr_Ksmr_model = smr_o(model, atr_out_T, par)
-
-  #atr_Kwgsr_model = @NLexpression(model, exp(5693.5/atr_out_T + 1.077*log(atr_out_T) + 5.44e-4*atr_out_T - 1.125e-7*atr_out_T^2 - 49170/(atr_out_T^2)-13.148));
-  #atr_Kwgsr_model = wgsr_o(model, atr_out_T, par)
-  
   atr_K_smr_model = K_smr(model, atr_out_T, par);
   atr_K_wgsr_model = K_wgsr(model, atr_out_T, par);
 
@@ -48,6 +41,6 @@ function ATR_model(model, par)
   @NLconstraint(model, sum(atr_H_out[i]*atr_out_mol[i] - atr_H_in[i]*atr_in_mol[i] for i=1:5) - nO2*par.atr.nO2_H == 0);
 
   # Energy balance - equipment specification
-  #@NLconstraint(model, atr_out_T - par.atr.out_T == 0);
+  @NLconstraint(model, atr_out_T - par.atr.out_T == 0);
   return model;
 end
