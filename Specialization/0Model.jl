@@ -103,6 +103,9 @@ println("\n\nOther variables"); show(otherdf, allrows=true);
 println("\n\nMass table"); show(massdf, allrows=true);
 println("\n\nCompostion table"); show(compositiondf, allrows=true);
 
-total_H2 = value(m[:pr_out_mol][3]) + value(m[:preGHR_out_mol][3]) + value(m[:ghr_out_mol][3]) + value(m[:atr_out_mol][3]) + value(m[:postATR_out_mol][3]) +
-                value(m[:itsr_out_mol][3]) + value(m[:preCond_out_mol][3]) + value(m[:cond_outProduct_mol][3]) + value(m[:psa_outProduct_mol][3]);
-H2_eff = value(m[:psa_outProduct_mol][3])/total_H2
+#total_H2 = value(m[:pr_out_mol][3]) + value(m[:preGHR_out_mol][3]) + value(m[:ghr_out_mol][3]) + value(m[:atr_out_mol][3]) + value(m[:postATR_out_mol][3]) +
+#                value(m[:itsr_out_mol][3]) + value(m[:preCond_out_mol][3]) + value(m[:cond_outProduct_mol][3]) + value(m[:psa_outProduct_mol][3]);
+
+H2_in = 4 * value(m[:pr_out_mol][1]) + 2*value(m[:pr_out_mol][2]) + 2*value(m[:pr_out_mol][3])
+
+H2_eff = 2*value(m[:psa_outProduct_mol][3])/H2_in

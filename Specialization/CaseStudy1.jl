@@ -122,11 +122,11 @@ for i = 1:21
     optimize!(m)
 
     # plotting
-    total_H2 = value(m[:pr_out_mol][3]) + value(m[:preGHR_out_mol][3]) + value(m[:ghr_out_mol][3]) + value(m[:atr_out_mol][3]) + value(m[:postATR_out_mol][3]) +
-                value(m[:itsr_out_mol][3]) + value(m[:preCond_out_mol][3]) + value(m[:cond_outProduct_mol][3]) + value(m[:psa_outProduct_mol][3]);
+    H2_in = 4 * value(m[:pr_out_mol][1]) + 2*value(m[:pr_out_mol][2]) + 2*value(m[:pr_out_mol][3])
+    H2_eff = 2*value(m[:psa_outProduct_mol][3])/H2_in
     append!(x_CH4_init, value(m[:mix_out_mol][1])/total_mole); 
     append!(n_H2_final, value(m[:cond_outProduct_mol][3]));
-    append!(H2_efficiency, value(m[:psa_outProduct_mol][3])/total_H2);
+    append!(H2_efficiency, H2_eff);
     append!(O2, value(m[:nO2]));
     append!(heating, (value(m[:prePR_Q]) + value(m[:preGHR_Q]))/10^3);
     append!(cooling, -(value(m[:itsr_Q]) + value(m[:preCond_Q]))/10^3);

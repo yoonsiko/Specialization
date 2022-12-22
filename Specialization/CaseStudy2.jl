@@ -116,9 +116,9 @@ for i = 1:21
     optimize!(m)
 
     initial_stream_with_H2O = sum(value(m[:mix_out_mol][i]) for i = 1:10);
-    total_H2 = value(m[:pr_out_mol][3]) + value(m[:preGHR_out_mol][3]) + value(m[:ghr_out_mol][3]) + value(m[:atr_out_mol][3]) + value(m[:postATR_out_mol][3]) +
-                value(m[:itsr_out_mol][3]) + value(m[:preCond_out_mol][3]) + value(m[:cond_outProduct_mol][3]) + value(m[:psa_outProduct_mol][3]);
-    append!(H2_efficiency, value(m[:psa_outProduct_mol][3])/total_H2);
+    H2_in = 4 * value(m[:pr_out_mol][1]) + 2*value(m[:pr_out_mol][2]) + 2*value(m[:pr_out_mol][3])
+    H2_eff = 2*value(m[:psa_outProduct_mol][3])/H2_in
+    append!(H2_efficiency, H2_eff);
     append!(H2O_in, value(m[:H2Ostream]));
     append!(O2, value(m[:nO2]));
     append!(n_H2_final, value(m[:cond_outProduct_mol][3]));
